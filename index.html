@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LifeMind</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d63d8"><link rel="icon" href="icon.svg">
+<style>
+:root{--bg:#eef3fb;--card:#fff;--ink:#16212f;--mute:#5a6a7d;--line:#e2e9f2;--acc:#1d63d8;--acc2:#6a4fd8;--accbg:#e8f0fd;--warn:#a05a00;--warnbg:#fdf0d5;--bad:#b3261e;--badbg:#fbe3e1;--ok:#137a3c;--okbg:#ddf3e4;--side:#0f1b2d;--g:linear-gradient(120deg,#1d63d8,#6a4fd8);--sh:0 2px 4px rgba(22,33,47,.05),0 10px 26px rgba(22,33,47,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d141c;--card:#16202b;--ink:#e8eef5;--mute:#9aa9b8;--line:#263443;--acc:#5aa9ff;--acc2:#9a8cf0;--accbg:#12304d;--warn:#f0b04a;--warnbg:#3a2c12;--bad:#f28b82;--badbg:#3d1c1a;--ok:#6fd08c;--okbg:#153521;--side:#0a111a;--sh:none}}
+:root[data-theme="dark"]{--bg:#0d141c;--card:#16202b;--ink:#e8eef5;--mute:#9aa9b8;--line:#263443;--acc:#5aa9ff;--acc2:#9a8cf0;--accbg:#12304d;--warn:#f0b04a;--warnbg:#3a2c12;--bad:#f28b82;--badbg:#3d1c1a;--ok:#6fd08c;--okbg:#153521;--side:#0a111a;--sh:none}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Segoe UI Variable","Segoe UI",system-ui,sans-serif}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.side{background:var(--side);color:#cfd9e6;padding:20px 12px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 20px}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--g);display:grid;place-items:center;color:#fff;font:700 19px Georgia,serif}
+.brand b{display:block;color:#fff;font-size:17px;line-height:1.1}.brand small{color:#8fa3ba;font-size:12px}
+.nav{display:flex;flex-direction:column;gap:5px}
+.nb{display:flex;gap:11px;align-items:center;background:none;border:0;color:#b5c3d4;padding:12px;border-radius:10px;cursor:pointer;font:600 14.5px inherit;font-family:inherit;text-align:left}
+.nb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.nb:hover{background:rgba(255,255,255,.07)}
+.nb[aria-selected=true]{background:var(--g);color:#fff}
+.sfoot{margin-top:auto;padding:14px 10px 0;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:#8fa3ba}
+.sfoot b{color:#fff;font-size:22px;display:block}
+.reset{background:none;border:0;color:#8fa3ba;text-decoration:underline;cursor:pointer;font:12px inherit;font-family:inherit;padding:8px 0 0}
+.main{padding:24px 28px 56px;min-width:0}
+.hero{background:var(--g);color:#fff;border-radius:18px;padding:22px 24px;display:flex;gap:18px;align-items:flex-start;box-shadow:var(--sh);position:relative}
+.he{font-size:44px;line-height:1;flex:none}
+.hb{flex:1;min-width:0}
+h1{font:700 26px/1.2 "Segoe UI Variable Display","Segoe UI",sans-serif;margin:0}
+.hero p{margin:6px 0 14px;opacity:.95;font-size:15.5px;max-width:60ch}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;background:rgba(255,255,255,.18);border-radius:99px;padding:6px 14px 6px 8px;font-size:13.5px;font-weight:600;display:flex;gap:8px;align-items:center}
+.steps li::before{content:counter(s);background:#fff;color:#3a3fbf;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+.live{display:inline-flex;gap:7px;align-items:center;background:rgba(255,255,255,.2);padding:5px 12px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.live i{width:8px;height:8px;border-radius:50%;background:#7dffa8}
+.tip{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px dashed var(--acc);border-radius:14px;padding:12px 16px;margin:14px 0;color:var(--ink)}
+.tip span{flex:1;min-width:220px}
+.tip button{margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sh);display:flex;gap:12px;align-items:center}
+.ke{width:42px;height:42px;border-radius:12px;background:var(--accbg);display:grid;place-items:center;font-size:21px;flex:none}
+.kpi.warn .ke{background:var(--warnbg)}.kpi.bad .ke{background:var(--badbg)}.kpi.ok .ke{background:var(--okbg)}
+.kl{display:block;color:var(--mute);font-size:13px}.kv{font:700 24px/1.15 "Segoe UI",sans-serif}
+h2{font:700 17px "Segoe UI",sans-serif;margin:0 0 10px}
+.sub{color:var(--mute);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1.2fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--sh)}
+label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+button.b{background:var(--g);color:#fff;border:0;border-radius:99px;padding:11px 22px;font:700 14.5px inherit;font-family:inherit;cursor:pointer;margin-top:14px}
+button.b:hover{filter:brightness(1.1)}
+button.g{background:var(--card);color:var(--acc);border:1px solid var(--acc);padding:6px 13px;margin:7px 7px 0 0;font-size:13px;font-weight:600;border-radius:99px;cursor:pointer;font-family:inherit}
+button.g:hover{background:var(--accbg)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.ok{background:var(--okbg);color:var(--ok)}.warn{background:var(--warnbg);color:var(--warn)}.bad{background:var(--badbg);color:var(--bad)}.info{background:var(--accbg);color:var(--acc)}
+.kpi.ok,.kpi.warn,.kpi.bad{background:var(--card);color:var(--ink)}
+.mem{border-left:4px solid var(--acc2);background:var(--bg);border-radius:0 12px 12px 0;padding:10px 14px;margin:9px 0;font-size:14px}
+.mem small{color:var(--mute)}
+.reply{background:var(--accbg);border-left:4px solid var(--acc);border-radius:12px;padding:14px 16px;margin-top:16px;white-space:pre-wrap}
+.reply::before{content:var(--rl,"🧠 Answer based on what I remember");display:block;font-weight:700;font-size:13px;color:var(--acc);margin-bottom:6px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{color:var(--mute);font-weight:600;font-size:13px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+@media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}.brand{padding:0 8px}.brand small,.sfoot b,.sfoot span{display:none}.nav{flex-direction:row;overflow-x:auto}.sfoot{margin:0 0 0 auto;border:0;padding:0}.grid{grid-template-columns:1fr}.main{padding:14px 12px 40px}.hero{flex-wrap:wrap;padding:18px}.he{font-size:34px}}
+#lang{margin-top:10px;padding:7px 9px;background:#16263c;color:#fff;border:1px solid #2b4160;border-radius:8px}button.g.pf{margin:0;padding:5px 9px;background:#16263c;color:#fff;border-color:#2b4160}</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">L</div><div><b>LifeMind</b><small>Your everyday memory</small></div></div>
+    <nav class="nav" id="tabs" role="tablist"></nav>
+    <div class="sfoot"><span>Items in memory</span><b id="memcount">0</b><div style="display:flex;gap:6px;margin-top:8px"><button class="g pf" id="th" title="Dark or light">🌓</button><button class="g pf" id="fm" title="Smaller text">A−</button><button class="g pf" id="fp" title="Bigger text">A+</button><button class="g pf" id="login" title="Family login">👨‍👩‍👧</button></div><select id="lang" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option></select><div id="sync" style="margin-top:6px"></div><button class="reset" id="reset">Reset demo data</button></div>
+  </aside>
+  <main class="main">
+    <div class="hero"><div class="he" id="hemoji"></div><div class="hb"><h1 id="ptitle"></h1><p id="psub"></p><ol class="steps" id="steps"></ol></div><span class="live"><i></i>Memory on</span></div>
+    <div class="tip"><span id="tip"></span><button class="b" id="ex"></button></div>
+    <div class="kpis" id="kpis"></div>
+    <div id="view"></div>
+  </main>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+const daysAgo=d=>Math.floor((Date.now()-new Date(d))/864e5);
+const KEY="lifemind-v1";
+
+function seed(){return{
+ support:{sel:"c1",customers:[
+  {id:"c1",name:"Home Wi-Fi",co:"Broadband and router",env:"200 Mbps plan, dual-band router in living room, 6 devices",frus:4,tickets:[
+   {id:"T-101",date:iso(60),issue:"Wi-Fi drops every evening",sol:"Switch phone and laptops to the 5GHz band",res:"worked"},
+   {id:"T-108",date:iso(21),issue:"Internet very slow at night",sol:"Restart the router",res:"failed"},
+   {id:"T-112",date:iso(20),issue:"Internet very slow at night",sol:"Change router channel and move it away from the microwave",res:"worked"}]},
+  {id:"c2",name:"Mom's phone",co:"Android phone",env:"Android 14, 32 GB storage, heavy WhatsApp use",frus:2,tickets:[
+   {id:"T-090",date:iso(45),issue:"Phone storage full and slow",sol:"Move photos to Google Photos and clear WhatsApp media",res:"worked"}]},
+  {id:"c3",name:"Work laptop",co:"Windows 11 laptop",env:"Windows 11, 8 GB RAM, Teams and Chrome",frus:1,tickets:[]}]},
+ ap:{invoices:[
+  {no:"EB-0725",vendor:"v1",amt:1150,po:1000,date:iso(60),out:"Paid: 15% summer rise is normal for this biller"},
+  {no:"BB-0825",vendor:"v3",amt:1180,po:1180,date:iso(30),out:"Paid: matches usual amount"}],
+  vendors:[
+  {id:"v1",name:"Electricity board",terms:15,tol:15,notes:["Bills rise up to 15% in summer because of AC use","Late fee applies after the due date"]},
+  {id:"v2",name:"OTT subscriptions",terms:30,tol:0.5,notes:["Price hikes are announced by email first","Sometimes billed twice after a card change"]},
+  {id:"v3",name:"Broadband",terms:30,tol:1,notes:["Fixed plan price plus GST","10% discount if paid annually"]}]},
+ comp:{controls:[
+  {id:"HL-01",name:"Dental checkup",reg:"Health",freq:180,last:iso(200),retest:false,finds:[{t:"Dentist: cavity to fill on lower left tooth",open:true}]},
+  {id:"CR-02",name:"Car service",reg:"Vehicle",freq:180,last:iso(150),retest:false,finds:[]},
+  {id:"IN-03",name:"Health insurance renewal",reg:"Insurance",freq:365,last:iso(355),retest:false,finds:[]},
+  {id:"HL-04",name:"Full body health check",reg:"Health",freq:365,last:iso(100),retest:false,finds:[{t:"Vitamin D low, retest after supplements",open:false}]},
+  {id:"HM-05",name:"Water purifier filter change",reg:"Home",freq:90,last:iso(60),retest:false,finds:[]}],
+  log:[]}
+};}
+let S=null,lang="en";
+try{lang=localStorage.getItem("lm-lang")||"en"}catch(e){}
+let UID;try{UID=localStorage.getItem("lm-uid");if(!UID){UID=crypto.randomUUID();localStorage.setItem("lm-uid",UID)}}catch(e){UID="guest-"+Date.now()}
+let tm;
+function setSync(ok){const e=$("#sync");if(e)e.textContent=ok?"● Saved on server":"● Offline: saved in browser"}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  clearTimeout(tm);tm=setTimeout(()=>fetch("/api/memory/"+UID,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)}).then(()=>setSync(true)).catch(()=>setSync(false)),300)};
+let tab="support",out={};
+
+/* ---------- Support agent ---------- */
+const STOP=new Set("the a an is to of and my our in on for it with after when again still not".split(" "));
+const words=t=>t.toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+const overlap=(a,b)=>{const x=new Set(words(a));return words(b).filter(w=>x.has(w)).length};
+const ANGRY=/again|third time|still|unacceptable|ridiculous|fed up|frustrat|angry|worst/i;
+function supportReply(c,msg){
+  const angry=ANGRY.test(msg);
+  if(angry)c.frus=Math.min(5,c.frus+1);
+  const scored=c.tickets.map(t=>({t,s:overlap(t.issue,msg)})).filter(x=>x.s>=2).sort((a,b)=>b.s-a.s);
+  const hi=c.frus>=4;
+  let r=(hi?`Sorry this keeps happening with ${c.name}. I remember the earlier attempts, so you don't need to explain again.\n\n`:`Got it. Here is what I remember about ${c.name}.\n\n`);
+  r+=`Your setup: ${c.env}.\n\n`;
+  let sol="Try the basics: restart, update, check cables and settings",ref=null;
+  if(scored.length){
+    const same=c.tickets.filter(t=>overlap(t.issue,scored[0].t.issue)>=2);
+    const good=same.find(t=>t.res==="worked"),bad=same.filter(t=>t.res==="failed");
+    r+=`This matches ${scored[0].t.id} (${scored[0].t.date}).\n`;
+    if(bad.length)r+=`Skipping what didn't work before: ${bad.map(b=>b.sol).join("; ")}.\n`;
+    if(good){sol=good.sol;ref=good;r+=`What fixed it last time: ${good.sol}. Trying that first.\n`}
+    else r+=`No proven fix on record, so I'm trying a new approach.\n`;
+  }else r+=`This looks new. I'm starting with basic checks suited to your setup.\n`;
+  if(hi)r+=`\nThis is a repeat problem. Consider calling the provider or a technician instead of retrying the same steps.`;
+  c.tickets.push({id:"T-"+(200+Math.floor(Math.random()*799)),date:iso(0),issue:msg.slice(0,90),sol,res:"open"});
+  save();return r;
+}
+function viewSupport(){
+  const M=S.support,c=M.customers.find(x=>x.id===M.sel);
+  const fl=c.frus>=4?["bad","High"]:c.frus>=3?["warn","Elevated"]:["ok","Calm"];
+  return`<div class="grid"><div class="card"><h2>What I remember</h2>
+   <label for="cs">Item</label><select id="cs">${M.customers.map(x=>`<option value="${x.id}" ${x.id===c.id?"selected":""}>${esc(x.name)} (${esc(x.co)})</option>`).join("")}</select>
+   <div class="mem"><b>Setup</b><br>${esc(c.env)}</div>
+   <div class="mem"><b>Annoyance level</b> <span class="pill ${fl[0]}">${fl[1]} (${c.frus}/5)</span></div>
+   <b>Problem history</b>${c.tickets.length?c.tickets.slice().reverse().map(t=>`<div class="mem"><b>${t.id}</b> <small>${t.date}</small> <span class="pill ${t.res==="worked"?"ok":t.res==="failed"?"bad":"info"}">${t.res}</span><br>${esc(t.issue)}<br><small>Fix tried: ${esc(t.sol)}</small>
+     ${t.res==="open"?`<br><button class="g" data-r="worked" data-t="${t.id}">It worked</button><button class="g" data-r="failed" data-t="${t.id}">Didn't work</button>`:""}</div>`).join(""):`<p class="sub">No problems logged yet.</p>`}
+  </div><div class="card"><h2>Describe a new problem</h2>
+   <label for="msg">What's happening?</label><textarea id="msg" rows="4" placeholder="e.g. The Wi-Fi is dropping again in the evening and I'm fed up"></textarea>
+   <button class="b" id="send">Get help</button>
+   ${out.support?`<div class="reply">${esc(out.support)}</div>`:""}</div></div>`;
+}
+function bindSupport(){
+  const M=S.support;
+  $("#cs").onchange=e=>{M.sel=e.target.value;out.support="";save();render()};
+  $("#send").onclick=()=>{const m=$("#msg").value.trim();if(!m)return;out.support=supportReply(M.customers.find(x=>x.id===M.sel),m);render()};
+  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
+    const c=M.customers.find(x=>x.id===M.sel),t=c.tickets.find(x=>x.id===b.dataset.t);
+    t.res=b.dataset.r;if(t.res==="worked")c.frus=Math.max(1,c.frus-1);save();render()});
+}
+
+/* ---------- AP agent ---------- */
+function apCheck(v,no,amt,po,termsOnInv){
+  const flags=[],dup=S.ap.invoices.find(i=>i.no.toLowerCase()===no.toLowerCase()&&i.vendor===v.id);
+  const varPct=po>0?(amt-po)/po*100:null;
+  if(dup)flags.push({k:"bad",t:`Possible double charge: bill ${no} was already paid on ${dup.date}. ${v.notes.find(n=>/twice/i.test(n))?"This biller has double-billed before.":""}`});
+  if(termsOnInv&&termsOnInv!==v.terms)flags.push({k:"warn",t:`Due-date mismatch: bill says ${termsOnInv} days, but this biller usually gives ${v.terms} days.`});
+  let d;
+  if(po<=0)d={k:"warn",t:"No usual amount entered. Add what you normally pay to compare."};
+  else if(Math.abs(varPct)<=0.5)d={k:"ok",t:`Only ${varPct.toFixed(1)}% off your usual amount. Safe to pay.`};
+  else if(varPct>0&&varPct<=v.tol)d={k:"ok",t:`${varPct.toFixed(1)}% higher is within the ${v.tol}% change that is normal for ${v.name}. Safe to pay.`};
+  else d={k:"bad",t:`${varPct.toFixed(1)}% change is above the ${v.tol}% that is normal for ${v.name}. Check before paying.`};
+  return{flags,d,varPct};
+}
+function viewAP(){
+  const A=S.ap,r=out.ap;
+  return`<div class="grid"><div class="card"><h2>Check a bill</h2>
+   <label for="av">Biller</label><select id="av">${A.vendors.map(v=>`<option value="${v.id}" ${r&&r.v===v.id?"selected":""}>${esc(v.name)}</option>`).join("")}</select>
+   <label for="an">Bill reference</label><input id="an" placeholder="EB-0925" value="${r?esc(r.no):""}">
+   <label for="aa">Bill amount (₹)</label><input id="aa" type="number" step="0.01" value="${r?r.amt:""}">
+   <label for="ap">Usual amount (₹)</label><input id="ap" type="number" step="0.01" value="${r?r.po:""}">
+   <label for="at">Days to pay, as printed on bill</label><input id="at" type="number" placeholder="30" value="${r&&r.tm?r.tm:""}">
+   <button class="b" id="chk">Check bill</button>
+   ${r?`<div class="reply"><b>${r.res.d.k==="ok"?"Recommendation":"Needs attention"}:</b> ${esc(r.res.d.t)}${r.res.flags.map(f=>`\n<b>Flag:</b> ${esc(f.t)}`).join("")}</div>
+   <button class="g" id="rec">Save as paid</button>${r.res.d.k==="bad"&&r.res.varPct>0&&!r.res.flags.some(f=>/double charge/.test(f.t))?`<button class="g" id="lrn">This is normal, remember it</button>`:""}`:""}
+  </div><div class="card"><h2>Biller memory</h2>
+  ${A.vendors.map(v=>`<div class="mem"><b>${esc(v.name)}</b> <span class="pill info">${v.terms} days to pay</span> <span class="pill info">normal change up to ${v.tol}%</span>
+   <ul style="margin:4px 0 0 18px;padding:0">${v.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}
+  <b>Recent bills</b><div class="tw"><table><tr><th>Ref</th><th>Biller</th><th>Amount</th><th>Outcome</th></tr>
+  ${A.invoices.slice(-6).reverse().map(i=>`<tr><td>${esc(i.no)}</td><td>${esc(A.vendors.find(v=>v.id===i.vendor).name)}</td><td>₹${i.amt.toLocaleString("en-IN")}</td><td>${esc(i.out)}</td></tr>`).join("")}</table></div></div></div>`;
+}
+function bindAP(){
+  const A=S.ap;
+  $("#chk").onclick=()=>{
+    const v=A.vendors.find(x=>x.id===$("#av").value),no=$("#an").value.trim(),amt=+$("#aa").value,po=+$("#ap").value,tm=+$("#at").value||0;
+    if(!no||!amt)return;out.ap={v:v.id,no,amt,po,tm,res:apCheck(v,no,amt,po,tm)};render()};
+  const rec=$("#rec");if(rec)rec.onclick=()=>{const r=out.ap;A.invoices.push({no:r.no,vendor:r.v,amt:r.amt,po:r.po,date:iso(0),out:r.res.d.t});out.ap=null;save();render()};
+  const l=$("#lrn");if(l)l.onclick=()=>{const r=out.ap,v=A.vendors.find(x=>x.id===r.v),p=Math.ceil(r.res.varPct*10)/10;
+    v.tol=Math.max(v.tol,p);v.notes.push(`Exception approved ${iso(0)}: ${p}% above usual on ${r.no}. Normal range raised to ${v.tol}%.`);
+    A.invoices.push({no:r.no,vendor:r.v,amt:r.amt,po:r.po,date:iso(0),out:`Marked normal; range now ${v.tol}%`});out.ap=null;save();render()};
+}
+
+/* ---------- Compliance agent ---------- */
+const status=c=>{const age=daysAgo(c.last),left=c.freq-age;
+  if(c.retest)return{k:"bad",t:"Redo needed (rules changed)",left:-1};
+  if(left<0)return{k:"bad",t:`Overdue by ${-left} days`,left};
+  if(left<=14)return{k:"warn",t:`Due in ${left} days`,left};
+  return{k:"ok",t:`On track, ${left} days left`,left}};
+function viewComp(){
+  const C=S.comp,gaps=C.controls.filter(c=>status(c).k!=="ok"||c.finds.some(f=>f.open));
+  return`<div class="card"><h2>What needs attention</h2>${gaps.length?`<p class="sub">${gaps.length} of ${C.controls.length} items need attention soon.</p>`:`<p class="sub">Everything is up to date.</p>`}
+  <div class="tw"><table><tr><th>Item</th><th>Category</th><th>Last done</th><th>Status</th><th>Open notes</th><th></th></tr>
+  ${C.controls.map(c=>{const s=status(c);return`<tr><td><b>${c.id}</b> ${esc(c.name)}</td><td>${esc(c.reg)}</td><td>${c.last}</td><td><span class="pill ${s.k}">${s.t}</span></td>
+   <td>${c.finds.map((f,i)=>`<div>${f.open?`<span class="pill bad">open</span>`:`<span class="pill ok">closed</span>`} ${esc(f.t)} ${f.open?`<button class="g" data-cl="${c.id}:${i}">Close</button>`:""}</div>`).join("")||"None"}</td>
+   <td><button class="g" data-tst="${c.id}">Mark done today</button></td></tr>`}).join("")}</table></div></div>
+  <div class="grid" style="margin-top:14px"><div class="card"><h2>Add a note</h2>
+   <label for="fc">Item</label><select id="fc">${C.controls.map(c=>`<option value="${c.id}">${c.id} ${esc(c.name)}</option>`).join("")}</select>
+   <label for="ft">Note</label><input id="ft" placeholder="e.g. Doctor advised a follow-up">
+   <button class="b" id="addf">Save note</button></div>
+  <div class="card"><h2>Record a change</h2>
+   <label for="pc">Item affected</label><select id="pc">${C.controls.map(c=>`<option value="${c.id}">${c.id} ${esc(c.name)}</option>`).join("")}</select>
+   <label for="pt">Change</label><input id="pt" placeholder="e.g. Doctor now wants checkups every 3 months">
+   <button class="b" id="addp">Save and flag to redo</button>
+   ${C.log.length?`<div style="margin-top:10px"><b>Change log</b>${C.log.slice(-4).reverse().map(l=>`<div class="mem"><small>${l.d} · ${l.c}</small><br>${esc(l.t)}</div>`).join("")}</div>`:""}</div></div>`;
+}
+function bindComp(){
+  const C=S.comp,g=id=>C.controls.find(c=>c.id===id);
+  document.querySelectorAll("[data-tst]").forEach(b=>b.onclick=()=>{const c=g(b.dataset.tst);c.last=iso(0);c.retest=false;save();render()});
+  document.querySelectorAll("[data-cl]").forEach(b=>b.onclick=()=>{const[id,i]=b.dataset.cl.split(":");g(id).finds[+i].open=false;save();render()});
+  $("#addf").onclick=()=>{const t=$("#ft").value.trim();if(!t)return;g($("#fc").value).finds.push({t,open:true});save();render()};
+  $("#addp").onclick=()=>{const t=$("#pt").value.trim();if(!t)return;const c=g($("#pc").value);c.retest=true;C.log.push({d:iso(0),c:c.id,t});save();render()};
+}
+
+/* ---------- shell ---------- */
+const IC={chat:'<path d="M4 5h16v11H9l-5 4z M8 9h8 M8 12h5"/>',insights:'<path d="M4 20V10 M10 20V4 M16 20v-7 M22 20H2"/>',support:'<path d="M4 5h16v11H9l-5 4z"/>',ap:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z M9 8h6 M9 12h6"/>',comp:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z M9 12l2 2 4-4"/>'};
+const TABS=[["support","Home and devices","Remembers your gadgets, past problems and what fixed them, so you never start from zero."],["ap","Bills and subscriptions","Learns what each bill normally looks like and flags anything odd, like double charges."],["comp","Life admin and health","Tracks checkups, renewals and to-dos so nothing lapses."],["chat","Ask LifeMind","Chat or speak. I answer using everything I remember."],["insights","Insights and timeline","Alerts, charts, weekly summary and your memory timeline."]];
+function kpis(){if(tab==="chat"||tab==="insights")return[];
+  if(tab==="support"){const cs=S.support.customers,t=cs.flatMap(c=>c.tickets),d=t.filter(x=>x.res!=="open"),w=t.filter(x=>x.res==="worked");
+    return[["Things tracked",cs.length,""],["Open problems",t.filter(x=>x.res==="open").length,"warn"],["Frustrating items",cs.filter(c=>c.frus>=4).length,"bad"],["Fix success rate",d.length?Math.round(w.length/d.length*100)+"%":"n/a","ok"]]}
+  if(tab==="ap"){const A=S.ap,tot=A.invoices.reduce((a,i)=>a+i.amt,0);
+    return[["Bills tracked",A.invoices.length,""],["Total billed","₹"+tot.toLocaleString("en-IN"),""],["Billers known",A.vendors.length,"ok"],["Patterns learned",A.vendors.reduce((a,v)=>a+v.notes.filter(n=>/^Exception approved/.test(n)).length,0),"warn"]]}
+  const cs=S.comp.controls,cur=cs.filter(c=>status(c).k==="ok"&&!c.finds.some(f=>f.open)).length;
+  return[["Items tracked",cs.length,""],["On track",Math.round(cur/cs.length*100)+"%","ok"],["Overdue",cs.filter(c=>status(c).k==="bad").length,"bad"],["Open notes",cs.reduce((a,c)=>a+c.finds.filter(f=>f.open).length,0),"warn"]]}
+function memCount(){const s=S.support.customers.reduce((a,c)=>a+c.tickets.length,0),p=S.ap.vendors.reduce((a,v)=>a+v.notes.length,0)+S.ap.invoices.length,c=S.comp.controls.reduce((a,x)=>a+x.finds.length,0)+S.comp.log.length;return s+p+c}
+const HERO={chat:{e:"💬",steps:["Type or speak","I read your memory","You get a personal answer"],tip:"💡 Try it: ask “Why is my internet slow again?” or tap 🎤 and speak.",ex:"Ask an example"},insights:{e:"📊",steps:["I read all your records","I spot trends and due dates","You act before it is late"],tip:"💡 Turn on alerts so I can warn you about renewals and overdue items.",ex:"Turn on alerts"},
+support:{e:"🏠",steps:["Describe a problem","I check what I remember","You get a smarter fix"],tip:"💡 Try it: tap the button, then press “Get help”. Notice it skips the fix that failed before.",ex:"Fill an example"},
+ap:{e:"💳",steps:["Enter a bill","I compare it with past bills","I say pay or check"],tip:"💡 Try it: fill the example, press “Check bill”, then “This is normal, remember it”. Check again to see it learned.",ex:"Fill an example"},
+comp:{e:"🗓️",steps:["I track what you did and when","I spot what is overdue","You fix it before it lapses"],tip:"💡 Try it: the dental checkup is overdue. Tap the button and watch its status turn green.",ex:"Mark dental checkup done"}};
+const KE={support:["🏠","🛠️","😤","✅"],ap:["🧾","💰","🏢","🧠"],comp:["📋","✅","⏰","📝"]};
+function render(){
+  const cur=TABS.find(t=>t[0]===tab),h=HERO[tab];
+  $("#tabs").innerHTML=TABS.map(([k,n])=>`<button class="nb" role="tab" aria-selected="${k===tab}" data-k="${k}"><svg viewBox="0 0 24 24">${IC[k]}</svg>${n}</button>`).join("");
+  document.querySelectorAll(".nb").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render()});
+  $("#ptitle").textContent=cur[1];$("#psub").textContent=cur[2];$("#hemoji").textContent=h.e;
+  $("#steps").innerHTML=h.steps.map(x=>`<li>${x}</li>`).join("");
+  $("#tip").textContent=h.tip;$("#ex").textContent=h.ex;
+  $("#kpis").innerHTML=kpis().map(([l,v,k],i)=>`<div class="kpi ${k}"><div class="ke">${KE[tab][i]}</div><div><span class="kl">${l}</span><span class="kv">${v}</span></div></div>`).join("");
+  $("#memcount").textContent=memCount();
+  $("#view").innerHTML=tab==="support"?viewSupport():tab==="ap"?viewAP():viewComp();
+  (tab==="support"?bindSupport:tab==="ap"?bindAP:bindComp)();
+  $("#ex").onclick=()=>{
+    if(tab==="support"){S.support.sel="c1";out.support="";save();render();const t=$("#msg");t.value="The internet is slow at night again and I'm fed up";t.focus()}
+    else if(tab==="ap"){$("#av").value="v1";$("#an").value="EB-0925";$("#aa").value=1200;$("#ap").value=1000;$("#at").value=15;$("#chk").scrollIntoView({block:"center"})}
+    else{const c=S.comp.controls.find(x=>x.id==="HL-01");c.last=iso(0);c.retest=false;save();render()}};
+}
+$("#reset").onclick=()=>{if(confirm("Reset all memory to demo data?")){S=seed();out={};save();render()}};
+const D=[["Home and devices", "घर और डिवाइस", "ఇల్లు & పరికరాలు"], ["Bills and subscriptions", "बिल और सब्सक्रिप्शन", "బిల్లులు & సబ్‌స్క్రిప్షన్లు"], ["Life admin and health", "ज़रूरी काम और सेहत", "ముఖ్యమైన పనులు & ఆరోగ్యం"], ["Remembers your gadgets, past problems and what fixed them, so you never start from zero.", "आपके गैजेट, पुरानी समस्याएँ और उनके हल याद रखता है, ताकि आपको बार-बार शुरू से न बताना पड़े।", "మీ పరికరాలు, గత సమస్యలు, వాటి పరిష్కారాలను గుర్తుంచుకుంటుంది, మళ్లీ మొదటి నుంచి చెప్పాల్సిన అవసరం ఉండదు."], ["Learns what each bill normally looks like and flags anything odd, like double charges.", "हर बिल सामान्यतः कैसा होता है यह सीखता है और दोहरा चार्ज जैसी गड़बड़ी बताता है।", "ప్రతి బిల్లు సాధారణంగా ఎలా ఉంటుందో నేర్చుకుని, రెండుసార్లు ఛార్జ్ వంటి తేడాలను చూపిస్తుంది."], ["Tracks checkups, renewals and to-dos so nothing lapses.", "चेकअप, रिन्यूअल और ज़रूरी काम ट्रैक करता है ताकि कुछ छूटे नहीं।", "చెకప్‌లు, రెన్యూవల్స్, పనులను ట్రాక్ చేస్తుంది, ఏదీ మిస్ కాకుండా."], ["Describe a problem", "समस्या बताएँ", "సమస్య చెప్పండి"], ["I check what I remember", "मैं अपनी याद जाँचता हूँ", "నేను గుర్తున్నది చూస్తాను"], ["You get a smarter fix", "आपको बेहतर हल मिलता है", "మీకు మెరుగైన పరిష్కారం దొరుకుతుంది"], ["Enter a bill", "बिल दर्ज करें", "బిల్లు నమోదు చేయండి"], ["I compare it with past bills", "मैं पुराने बिलों से तुलना करता हूँ", "పాత బిల్లులతో పోలుస్తాను"], ["I say pay or check", "मैं बताता हूँ: भरें या जाँचें", "చెల్లించాలా, చెక్ చేయాలా చెబుతాను"], ["I track what you did and when", "आपने क्या और कब किया, मैं ट्रैक करता हूँ", "మీరు ఏది, ఎప్పుడు చేశారో ట్రాక్ చేస్తాను"], ["I spot what is overdue", "जो देर हो गई है वह पहचानता हूँ", "ఆలస్యమైనవి గుర్తిస్తాను"], ["You fix it before it lapses", "छूटने से पहले आप सुधार लेते हैं", "గడువు తీరకముందే మీరు సరిచేస్తారు"], ["💡 Try it: tap the button, then press “Get help”. Notice it skips the fix that failed before.", "💡 आज़माएँ: बटन दबाएँ, फिर “सहायता पाएँ” दबाएँ। देखें कि यह पहले फेल हुआ हल छोड़ देता है।", "💡 ప్రయత్నించండి: బటన్ నొక్కి, “సహాయం పొందండి” నొక్కండి. ఇంతకు ముందు పని చేయని పరిష్కారాన్ని అది వదిలేస్తుంది."], ["💡 Try it: fill the example, press “Check bill”, then “This is normal, remember it”. Check again to see it learned.", "💡 आज़माएँ: उदाहरण भरें, “बिल जाँचें” दबाएँ, फिर “यह सामान्य है, याद रखो” दबाएँ। दोबारा जाँचकर देखें कि उसने सीख लिया।", "💡 ప్రయత్నించండి: ఉదాహరణ నింపి, “బిల్లు చెక్ చేయండి” నొక్కి, ఆపై “ఇది సాధారణమే, గుర్తుంచుకో” నొక్కండి. మళ్లీ చెక్ చేస్తే అది నేర్చుకున్నట్టు కనిపిస్తుంది."], ["💡 Try it: the dental checkup is overdue. Tap the button and watch its status turn green.", "💡 आज़माएँ: दाँतों का चेकअप देर से है। बटन दबाएँ और स्थिति हरी होते देखें।", "💡 ప్రయత్నించండి: డెంటల్ చెకప్ ఆలస్యమైంది. బటన్ నొక్కి స్థితి ఆకుపచ్చగా మారడం చూడండి."], ["Fill an example", "उदाहरण भरें", "ఉదాహరణ నింపండి"], ["Mark dental checkup done", "दाँतों का चेकअप पूरा करें", "డెంటల్ చెకప్ పూర్తయిందని గుర్తించండి"], ["Get help", "सहायता पाएँ", "సహాయం పొందండి"], ["Check bill", "बिल जाँचें", "బిల్లు చెక్ చేయండి"], ["This is normal, remember it", "यह सामान्य है, याद रखो", "ఇది సాధారణమే, గుర్తుంచుకో"], ["Save as paid", "भुगतान किया, सहेजें", "చెల్లించినట్లు సేవ్ చేయండి"], ["Mark done today", "आज पूरा हुआ", "ఈరోజు పూర్తయింది"], ["Save note", "नोट सहेजें", "నోట్ సేవ్ చేయండి"], ["What I remember", "मुझे क्या याद है", "నాకు గుర్తున్నది"], ["Describe a new problem", "नई समस्या बताएँ", "కొత్త సమస్య వివరించండి"], ["Check a bill", "बिल जाँचें", "బిల్లు చెక్ చేయండి"], ["Biller memory", "बिल भेजने वालों की जानकारी", "బిల్లర్ల సమాచారం"], ["What needs attention", "किन पर ध्यान चाहिए", "దేనిపై శ్రద్ధ అవసరం"], ["Add a note", "नोट जोड़ें", "నోట్ జోడించండి"], ["Items in memory", "याद की गई चीज़ें", "గుర్తుంచుకున్నవి"], ["Reset demo data", "डेमो डेटा रीसेट करें", "డెమో డేటా రీసెట్"], ["Memory on", "मेमोरी चालू", "మెమరీ ఆన్"]];
+const RL={hi:"🧠 मेरी याद के आधार पर जवाब",te:"🧠 నా జ్ఞాపకం ఆధారంగా సమాధానం"};
+function applyLang(){
+  document.documentElement.lang=lang;$("#lang").value=lang;
+  if(lang==="en"){document.documentElement.style.removeProperty("--rl");return}
+  document.documentElement.style.setProperty("--rl",'"'+RL[lang]+'"');
+  const i=lang==="hi"?1:2,m=new Map(D.map(r=>[r[0],r[i]])),w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+  while(n=w.nextNode()){const k=n.nodeValue.trim();if(m.has(k))n.nodeValue=n.nodeValue.replace(k,m.get(k))}
+}
+const render0=render;render=function(){render0();applyLang()};
+$("#lang").onchange=e=>{lang=e.target.value;try{localStorage.setItem("lm-lang",lang)}catch(x){}render()};
+/* ===== Advanced features ===== */
+const CHAT=[];let voiceOn=true;const LC={en:"en-IN",hi:"hi-IN",te:"te-IN"};
+const speak=t=>{try{const u=new SpeechSynthesisUtterance(t);u.lang=LC[lang];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
+async function ask(q){
+  CHAT.push({r:"you",t:q},{r:"ai",t:"…"});paint();
+  let a;try{const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:q,lang,memory:S})});a=(await r.json()).reply}catch(e){a="I cannot reach the server. Start it with npm start."}
+  CHAT[CHAT.length-1].t=a;paint();if(voiceOn)speak(a)}
+function paint(){if(tab==="chat"){$("#view").innerHTML=chatView();chatBind()}}
+const chatView=()=>`<div class="card"><div id="cl" style="min-height:260px;max-height:50vh;overflow:auto">${CHAT.length?CHAT.map(m=>m.r==="you"?`<div class="mem"><b>You:</b> ${esc(m.t)}</div>`:`<div class="reply" style="margin:8px 0">${esc(m.t)}</div>`).join(""):'<p class="sub">Ask about your devices, bills or health tasks. Tap 🎤 to speak.</p>'}</div>
+<div style="display:flex;gap:8px;margin-top:12px"><input id="cq" placeholder="Type your question…"><button class="g" id="mic" title="Speak" style="margin:0">🎤</button><button class="b" id="cs2" style="margin:0">Send</button></div>
+<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="vo" ${voiceOn?"checked":""} style="width:auto"> Read answers aloud</label></div>`;
+function chatBind(){
+  const send=()=>{const v=$("#cq").value.trim();if(v){$("#cq").value="";ask(v)}};
+  $("#cs2").onclick=send;$("#cq").onkeydown=e=>{if(e.key==="Enter")send()};$("#vo").onchange=e=>voiceOn=e.target.checked;
+  $("#mic").onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert("Voice input works in Chrome or Edge.");const r=new R();r.lang=LC[lang];r.onresult=e=>{$("#cq").value=e.results[0][0].transcript;send()};r.start()};
+  const l=$("#cl");l.scrollTop=l.scrollHeight}
+function alerts(){const a=[];S.comp.controls.forEach(c=>{const x=status(c);if(x.k!=="ok")a.push({k:x.k,t:`${c.name}: ${x.t}`});c.finds.filter(f=>f.open).forEach(f=>a.push({k:"warn",t:`${c.name}: ${f.t}`}))});
+  S.support.customers.forEach(c=>{if(c.frus>=4)a.push({k:"bad",t:`${c.name}: repeat problems. Consider calling a technician.`})});return a}
+function insights(){const o=[];S.ap.vendors.forEach(v=>{const b=S.ap.invoices.filter(i=>i.vendor===v.id);if(b.length){const l=b[b.length-1];if(l.po){const p=(l.amt-l.po)/l.po*100;if(Math.abs(p)>=5)o.push(`${v.name}: last bill was ${Math.abs(p).toFixed(0)}% ${p>0?"above":"below"} your usual amount.`)}}});
+  const c={};S.support.customers.forEach(x=>x.tickets.forEach(t=>c[t.issue]=(c[t.issue]||0)+1));const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]>1)o.push(`Most repeated problem: “${top[0]}” (${top[1]} times).`);
+  const w=S.support.customers.flatMap(x=>x.tickets).filter(t=>t.res==="worked").length;if(w)o.push(`${w} fixes worked and are remembered for next time.`);
+  return o.length?o:["Add more bills and problems to unlock insights."]}
+const weekly=()=>`This week: ${alerts().length} item(s) need attention. ${S.ap.invoices.length} bills tracked, ₹${S.ap.invoices.reduce((a,i)=>a+i.amt,0).toLocaleString("en-IN")} in total. ${S.support.customers.flatMap(c=>c.tickets).filter(t=>t.res==="open").length} open problem(s).`;
+function timeline(){const e=[];S.support.customers.forEach(c=>c.tickets.forEach(t=>e.push({d:t.date,i:"🛠️",t:`${c.name}: ${t.issue} (${t.res})`})));S.ap.invoices.forEach(i=>e.push({d:i.date,i:"🧾",t:`${i.no}: ₹${i.amt}. ${i.out}`}));S.comp.controls.forEach(c=>e.push({d:c.last,i:"📋",t:`${c.name} done`}));S.comp.log.forEach(l=>e.push({d:l.d,i:"📝",t:l.t}));return e.sort((a,b)=>b.d.localeCompare(a.d))}
+function chart(){const b=S.ap.invoices.slice(-8);if(!b.length)return"";const m=Math.max(...b.map(i=>i.amt)),w=64;
+  return`<svg viewBox="0 0 ${b.length*w} 150" style="width:100%;max-height:210px">${b.map((i,k)=>{const h=i.amt/m*90;return`<rect x="${k*w+10}" y="${120-h}" width="44" height="${h}" rx="6" fill="var(--acc)"/><text x="${k*w+32}" y="${114-h}" font-size="10" text-anchor="middle" fill="var(--ink)">₹${i.amt}</text><text x="${k*w+32}" y="138" font-size="9" text-anchor="middle" fill="var(--mute)">${esc(i.no)}</text>`}).join("")}</svg>`}
+function insView(){const A=alerts(),sc=Math.max(0,100-A.filter(a=>a.k==="bad").length*20-A.filter(a=>a.k==="warn").length*10);
+  return`<div class="grid"><div class="card"><h2>Life admin score: ${sc}/100</h2>${A.map(a=>`<div class="mem"><span class="pill ${a.k}">${a.k==="bad"?"urgent":"soon"}</span> ${esc(a.t)}</div>`).join("")||'<p class="sub">All clear.</p>'}
+<h2 style="margin-top:16px">Smart insights</h2>${insights().map(x=>`<div class="mem">${esc(x)}</div>`).join("")}
+<h2 style="margin-top:16px">Weekly summary</h2><div class="reply" style="margin-top:0">${esc(weekly())}</div><button class="g" id="wk">🔊 Read aloud</button><button class="g" id="wai">✨ Ask AI to write it</button></div>
+<div><div class="card"><h2>Bill amounts</h2>${chart()}</div><div class="card" style="margin-top:16px"><h2>Memory timeline</h2><div style="max-height:340px;overflow:auto">${timeline().map(e=>`<div class="mem"><small>${e.d}</small> ${e.i} ${esc(e.t)}</div>`).join("")}</div></div></div></div>`}
+const notify=()=>{if(!window.Notification)return alert("Notifications are not supported here.");Notification.requestPermission().then(p=>{if(p==="granted")alerts().slice(0,3).forEach(a=>new Notification("LifeMind",{body:a.t}))})};
+const render1=render;render=function(){render1();
+  if(tab==="chat"){paint();$("#ex").onclick=()=>ask("Why is my internet slow again?")}
+  else if(tab==="insights"){$("#view").innerHTML=insView();$("#wk").onclick=()=>speak(weekly());$("#wai").onclick=()=>{tab="chat";render();ask("Write my weekly summary in 4 short lines.")};$("#ex").onclick=notify}
+  else if(tab==="ap"){$("#view .card").insertAdjacentHTML("afterbegin",'<label class="g" style="display:inline-block;cursor:pointer">📷 Scan a bill photo<input type="file" id="ph" accept="image/*" capture="environment" hidden></label>');
+    $("#ph").onchange=async e=>{const f=e.target.files[0];if(!f)return;const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(f)});
+      try{const j=await(await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:d})})).json();if(j.error)return alert(j.error);
+        if(j.ref)$("#an").value=j.ref;if(j.amount)$("#aa").value=j.amount;if(j.days)$("#at").value=j.days;
+        const o=[...$("#av").options].find(x=>j.biller&&x.text.toLowerCase().includes(String(j.biller).toLowerCase().split(" ")[0]));if(o)$("#av").value=o.value}catch(x){alert("Scanning needs the server and Azure OpenAI.")}}}
+  applyLang()};
+try{const z=+localStorage.getItem("lm-zoom");if(z)document.body.style.zoom=z;const t=localStorage.getItem("lm-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}
+$("#th").onclick=()=>{const d=document.documentElement,n=(d.dataset.theme||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"))==="dark"?"light":"dark";d.dataset.theme=n;try{localStorage.setItem("lm-theme",n)}catch(e){}};
+const zoom=k=>{const z=Math.min(1.4,Math.max(.85,(+document.body.style.zoom||1)+k));document.body.style.zoom=z;try{localStorage.setItem("lm-zoom",z)}catch(e){}};
+$("#fm").onclick=()=>zoom(-.1);$("#fp").onclick=()=>zoom(.1);
+$("#login").onclick=async()=>{const n=prompt("Family or account name"),p=prompt("PIN (4 or more digits)");if(!n||!p)return;
+  try{const j=await(await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:n,pin:p})})).json();if(j.error)return alert(j.error);UID=j.uid;localStorage.setItem("lm-uid",UID);S=null;await boot();alert("Signed in. Anyone using the same name and PIN shares this memory.")}catch(e){alert("Login needs the server running.")}};
+async function boot(){
+  try{const r=await fetch("/api/memory/"+UID);if(r.ok)S=await r.json();setSync(true)}catch(e){setSync(false)}
+  if(!S||!S.support){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}}
+  if(!S||!S.support){S=seed();save()}
+  render();
+  if(window.Notification&&Notification.permission==="granted")alerts().slice(0,2).forEach(a=>new Notification("LifeMind",{body:a.t}));
+}
+boot();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
